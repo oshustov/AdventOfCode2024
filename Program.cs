@@ -3,4 +3,4 @@ using AdventOfCode2024.Day2;
 
 // DayOne_DistanceBetweenLists.Run();
 // DayOne_Part2_SimilarityScore.Run();
-DayTwo_UnsafeReports.Run();
+DayTwo_UnsafeReports_Part2.Run();
