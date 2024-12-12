@@ -8,67 +8,46 @@ public static class DayTwo_UnsafeReports_Part2
     using var reader = new StreamReader(file);
 
     var safeCount = 0;
-    var notSafeLevels = new List<List<long>>();
-
     while (!reader.EndOfStream)
     {
-      var levels = GetLevels(reader.ReadLine());
-      if (AreSafe(levels.ToList()))
-      {
+      var sequence = reader.ReadLine()!.AsSequence();
+      if (IsSafe(sequence) || VariantsOf(sequence).Any(IsSafe))
         safeCount++;
-        Console.WriteLine(string.Join(", ", levels));
-      }
-      else
-      {
-        notSafeLevels.Add(levels.ToList());
-      }
-    }
-
-    foreach (List<long> notSafeLevel in notSafeLevels)
-    {
-      foreach (var variant in Variants(notSafeLevel))
-      {
-        if (AreSafe(variant))
-        {
-          safeCount++;
-          break;
-        }
-      }
     }
 
     Console.WriteLine(safeCount);
     Console.ReadLine();
   }
 
-  private static bool AreSafe(List<long> levels)
+  private static bool IsSafe(List<long> levels)
   {
-    var leftNum = 0;
-    var rightNum = 1;
+    var leftIndex = 0;
+    var rightIndex = 1;
+    var sign = 0L;
 
-    var levelGrowSign = 0L;
-    for (; rightNum < levels.Count; leftNum++, rightNum++)
+    for (; rightIndex < levels.Count; leftIndex++, rightIndex++)
     {
-      var difference = levels[leftNum] - levels[rightNum];
+      var difference = levels[leftIndex] - levels[rightIndex];
       var withinRange = Math.Abs(difference) >= 1 && Math.Abs(difference) <= 3;
       if (difference == 0 || !withinRange)
         return false;
 
-      var adjacentLevelsSign = difference / Math.Abs(difference);
+      var adjacentLevelsSign = Math.Sign(difference);
 
-      if (levelGrowSign == 0)
+      if (sign == 0)
       {
-        levelGrowSign = adjacentLevelsSign;
+        sign = adjacentLevelsSign;
         continue;
       }
 
-      if (levelGrowSign != adjacentLevelsSign)
+      if (sign != adjacentLevelsSign)
         return false;
     }
 
     return true;
   }
 
-  private static IEnumerable<List<long>> Variants(List<long> source)
+  private static IEnumerable<List<long>> VariantsOf(List<long> source)
   {
     for (var i = 0; i < source.Count; i++)
     {
@@ -77,15 +56,15 @@ public static class DayTwo_UnsafeReports_Part2
       yield return variant;
     }
   }
+}
 
-  private static long[] GetLevels(string line)
-  {
-    if (string.IsNullOrEmpty(line))
-      return [];
-
-    return line.Split(' ')
-      .Where(x => !string.IsNullOrWhiteSpace(x))
-      .Select(long.Parse)
-      .ToArray();
-  }
+public static class Extensions
+{
+  public static List<long> AsSequence(this string self) =>
+    string.IsNullOrWhiteSpace(self)
+      ? []
+      : self.Split(' ')
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Select(long.Parse)
+        .ToList();
 }
