@@ -8,6 +8,7 @@ public static class Day4_XMAS
     public static Func<Position, Position> NextDown => x => x with { Row = x.Row + 1 };
     public static Func<Position, Position> NextDiagonalUp => x => x with { Row = x.Row - 1, Col = x.Col + 1 };
     public static Func<Position, Position> NextDiagonalDown => x => x with { Row = x.Row + 1, Col = x.Col + 1 };
+
     public bool IsInside<T>(List<List<T>> matrix) =>
       Row >= 0 && Row < matrix.Count &&
       Col >= 0 && Col < matrix[0].Count;
